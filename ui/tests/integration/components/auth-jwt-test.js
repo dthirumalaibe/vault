@@ -171,37 +171,32 @@ module('Integration | Component | auth jwt', function(hooks) {
     await renderIt(this);
     this.set('selectedAuthPath', 'foo');
     await component.role('test');
-    component.login();
+    let finished = component.login();
 
     later(async () => {
       run.cancelTimers();
-      await settled();
-      let call = this.window.open.getCall(0);
-      assert.deepEqual(
-        call.args,
-        [
-          'http://example.com',
-          'vaultOIDCWindow',
-          'width=500,height=600,resizable,scrollbars=yes,top=0,left=0',
-        ],
-        'called with expected args'
-      );
     }, 50);
-    await settled();
+    await finished;
+
+    let call = this.window.open.getCall(0);
+    assert.deepEqual(
+      call.args,
+      ['http://example.com', 'vaultOIDCWindow', 'width=500,height=600,resizable,scrollbars=yes,top=0,left=0'],
+      'called with expected args'
+    );
   });
 
   test('oidc: it calls error handler when popup is closed', async function(assert) {
     await renderIt(this);
     this.set('selectedAuthPath', 'foo');
     await component.role('test');
-    component.login();
+    let finished = component.login();
 
     later(async () => {
       this.window.close();
-      await settled();
-      assert.equal(this.error, ERROR_WINDOW_CLOSED, 'calls onError with error string');
     }, 50);
-    await settled();
+    await finished;
+    assert.equal(this.error, ERROR_WINDOW_CLOSED, 'calls onError with error string');
   });
 
   test('oidc: storage event fires with wrong key', async function(assert) {

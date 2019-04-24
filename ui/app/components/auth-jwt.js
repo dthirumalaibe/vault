@@ -68,7 +68,9 @@ export default Component.extend({
       }
     }
     this.set('role', role);
-  }).restartable(),
+  })
+    .restartable()
+    .withTestWaiter(),
 
   handleOIDCError(err) {
     this.onLoading(false);
@@ -139,7 +141,7 @@ export default Component.extend({
     this.onSelectedAuth('token');
     this.onToken(token);
     yield this.onSubmit();
-  }),
+  }).withTestWaiter(),
 
   actions: {
     async startOIDCAuth(data, e) {
