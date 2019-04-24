@@ -1,4 +1,6 @@
 #!/usr/bin/env node
+/* eslint-env node */
+/* eslint-disable no-console */
 
 const execa = require('execa');
 const chalk = require('chalk');
