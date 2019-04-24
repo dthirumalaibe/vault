@@ -158,7 +158,9 @@ module('Integration | Component | auth jwt', function(hooks) {
     this.set('selectedAuthPath', 'foo');
     await component.role('test');
     await settled();
+    // this failed once
     assert.notOk(component.jwtPresent, 'does not show jwt input for OIDC type login');
+    // this failed once
     assert.equal(component.loginButtonText, 'Sign in with OIDC Provider');
 
     await component.role('okta');
@@ -175,10 +177,11 @@ module('Integration | Component | auth jwt', function(hooks) {
 
     later(async () => {
       run.cancelTimers();
-    }, 50);
+    }, 500);
     await finished;
 
     let call = this.window.open.getCall(0);
+    // fail: unable to property args of undefined
     assert.deepEqual(
       call.args,
       ['http://example.com', 'vaultOIDCWindow', 'width=500,height=600,resizable,scrollbars=yes,top=0,left=0'],
@@ -194,8 +197,9 @@ module('Integration | Component | auth jwt', function(hooks) {
 
     later(async () => {
       this.window.close();
-    }, 50);
+    }, 500);
     await finished;
+    // fail: result undefined
     assert.equal(this.error, ERROR_WINDOW_CLOSED, 'calls onError with error string');
   });
 
@@ -208,7 +212,7 @@ module('Integration | Component | auth jwt', function(hooks) {
       run.cancelTimers();
       this.window.trigger('storage', { key: 'wrongThing' });
       assert.equal(this.window.localStorage.removeItem.callCount, 0, 'never calls removeItem');
-    }, 50);
+    }, 500);
     await settled();
   });
 
@@ -220,9 +224,11 @@ module('Integration | Component | auth jwt', function(hooks) {
     later(async () => {
       this.window.trigger('storage', { key: 'oidcState', newValue: JSON.stringify({}) });
       await settled();
+      // fail: result 0
       assert.equal(this.window.localStorage.removeItem.callCount, 1, 'calls removeItem');
+      // fail: result undefined
       assert.equal(this.error, ERROR_MISSING_PARAMS, 'calls onError with params missing error');
-    }, 50);
+    }, 500);
     await settled();
   });
 
@@ -244,7 +250,7 @@ module('Integration | Component | auth jwt', function(hooks) {
       assert.equal(this.selectedAuth, 'token', 'calls onSelectedAuth with token');
       assert.equal(this.token, 'token', 'calls onToken with token');
       assert.ok(this.handler.calledOnce, 'calls the onSubmit handler');
-    }, 50);
+    }, 500);
     await settled();
   });
 });
